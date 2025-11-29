@@ -24,6 +24,7 @@ public class SearchScreen extends Screen {
     private final List<String> suggestions = new ArrayList<>();
     private int suggestion_pointer = 1;
 
+
     protected SearchScreen() {
         super(Text.literal("SnapSearch"));
     }
@@ -44,6 +45,7 @@ public class SearchScreen extends Screen {
             }
         });
     }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         int transparent_black = 0x7F000000;
@@ -78,24 +80,24 @@ public class SearchScreen extends Screen {
             for (int i = 0; i < maxVisible; i++) {
                 if (i >= visible) { break; }
 
-                String s = suggestions.get(page * maxVisible + i);
+                String suggestion = suggestions.get(page * maxVisible + i);
                 if (i == listPointer - 1) {
                     context.fill(
                             searchField.getX(),
                             suggestionY - 2,
-                            searchField .getX() + searchField.getWidth(),
+                            searchField.getX() + searchField.getWidth(),
                             suggestionY + 10,
                             marker_yellow
                     );
                 }
-                context.drawCenteredTextWithShadow(this.textRenderer, s, this.width / 2, suggestionY, white);
+                context.drawCenteredTextWithShadow(this.textRenderer, prettifyItemName(suggestion), this.width / 2, suggestionY, white);
 
                 suggestionY += 12;
             }
         }
 
         // Show buy/sell mode
-        context.drawCenteredTextWithShadow(this.textRenderer, isBuy ? "Mode: BUY" : "Mode: SELL", this.width / 2, searchField.getY() - 14, isBuy ? green : red);
+        context.drawCenteredTextWithShadow(this.textRenderer, isBuy ? "BUY" : "SELL", this.width / 2, searchField.getY() - 14, isBuy ? green : red);
 
         super.render(context, mouseX, mouseY, delta);
     }
@@ -112,7 +114,7 @@ public class SearchScreen extends Screen {
             isBuy = !isBuy; // toggle buy/sell
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
+        if (keyCode == GLFW.GLFW_KEY_TAB || keyCode == GLFW.GLFW_KEY_DOWN) {
             if (suggestion_pointer < suggestions.size()) {
                 suggestion_pointer++;
             } else {
@@ -123,6 +125,11 @@ public class SearchScreen extends Screen {
             }
 
             return true;
+        } else if (keyCode == GLFW.GLFW_KEY_UP) {
+            if (suggestion_pointer >= 2) {
+                suggestion_pointer--;
+                searchField.setText(suggestions.get(suggestion_pointer - 1));
+            }
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE || keyCode == GLFW.GLFW_KEY_DELETE) {
             userTyped = true;
@@ -168,7 +175,7 @@ public class SearchScreen extends Screen {
             // Optional: skip unwanted items
             if (name.contains("DEBUG") || name.contains("COMMAND") || name.contains("BARRIER") || name.equalsIgnoreCase("AIR")) continue;
 
-            if (name.startsWith(text.toUpperCase())) {
+            if (name.contains(text.toUpperCase().replace(" ", "_"))) {
                 suggestions.add(name);
             }
         }
@@ -179,5 +186,13 @@ public class SearchScreen extends Screen {
     public boolean charTyped(CharInput input) {
         userTyped = true;
         return super.charTyped(input);
+    }
+
+    public static String prettifyItemName(String name) {
+        String[] words = name.split("_");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase();
+        }
+        return String.join(" ", words);
     }
 }
