@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "package": "tailor.snapsearch.client.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "ChatScreenAccessor"
+  ]
+}

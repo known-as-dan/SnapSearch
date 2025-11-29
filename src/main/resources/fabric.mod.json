@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "snapsearch",
+  "version": "${version}",
+  "name": "SnapSearch",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "tailor.snapsearch.client.SnapsearchDataGenerator"
+    ],
+    "client": [
+      "tailor.snapsearch.client.SnapsearchClient"
+    ],
+    "main": [
+      "tailor.snapsearch.Snapsearch"
+    ]
+  },
+  "mixins": [
+    "snapsearch.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
